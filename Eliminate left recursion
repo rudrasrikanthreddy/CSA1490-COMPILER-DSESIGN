@@ -1,0 +1,107 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+#define MAX_PROD 10
+#define MAX_LEN 10
+
+char productions[MAX_PROD][MAX_LEN];
+char new_productions[MAX_PROD][MAX_LEN];
+int num_productions;
+
+void eliminate_left_recursion();
+
+int main()
+{
+    printf("Enter the number of productions: ");
+    scanf("%d",&num_productions);
+    
+    for(int i=0;i<num_productions;i++)
+    {
+        printf("Enter the %d production: ",i+1);
+        scanf("%s",productions[i]);
+    }
+    
+    eliminate_left_recursion();
+    
+    printf("\nThe new set of productions after eliminating left recursion:\n");
+    for(int i=0;i<num_productions;i++)
+    {
+        printf("%s\n",new_productions[i]);
+    }
+    
+    return 0;
+}
+
+void eliminate_left_recursion()
+{
+    int index=0;
+    
+    for(int i=0;i<num_productions;i++)
+    {
+        int j=0;
+        while(productions[i][j]!='\0' && productions[i][j]!=' ')
+        {
+            j++;
+        }
+        
+        if(productions[i][0]==productions[i][j+1])
+        {
+            char variable=productions[i][0];
+            
+            int k=0;
+            while(productions[i][k]!='\0')
+            {
+                if(productions[i][k+2]=='\0')
+                {
+                    new_productions[index][k]=variable;
+                    new_productions[index][k+1]='\'';
+                    new_productions[index][k+2]='\0';
+                    
+                    index++;
+                    break;
+                }
+                else
+                {
+                    int l=0;
+                    while(productions[i][l]!=' ')
+                    {
+                        l++;
+                    }
+                    
+                    new_productions[index][k]=variable;
+                    new_productions[index][k+1]='\'';
+                    new_productions[index][k+2]=' ';
+                    
+                    k=k+3;
+                    l++;
+                    
+                    while(productions[i][l]!='\0')
+                    {
+                        new_productions[index][k]=productions[i][l];
+                        
+                        if(productions[i][l+1]=='\0')
+                        {
+                            new_productions[index][k+1]='\'';
+                            new_productions[index][k+2]='\0';
+                            
+                            index++;
+                            break;
+                        }
+                        else
+                        {
+                            new_productions[index][k+1]=' ';
+                            k++;
+                            l++;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            strcpy(new_productions[index],productions[i]);
+            index++;
+        }
+    }
+}
