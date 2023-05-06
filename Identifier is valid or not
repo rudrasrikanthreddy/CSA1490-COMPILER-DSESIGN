@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+bool isValidIdentifier(char* str);
+
+int main()
+{
+    char input[100];
+    printf("Enter an identifier: ");
+    scanf("%s", input);
+    if (isValidIdentifier(input))
+        printf("%s is a valid identifier.\n", input);
+    else
+        printf("%s is not a valid identifier.\n", input);
+    return 0;
+}
+
+bool isValidIdentifier(char* str)
+{
+    if (!isalpha(str[0]) && str[0] != '_')
+        return false;
+
+    for (int i = 1; str[i] != '\0'; i++) {
+        if (!isalnum(str[i]) && str[i] != '_')
+            return false;
+    }
+
+    return true;
+}
