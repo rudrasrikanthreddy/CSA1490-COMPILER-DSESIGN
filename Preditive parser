@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX_NONTERMINALS 10
+#define MAX_TERMINALS 10
+
+char nonterminals[MAX_NONTERMINALS];
+char terminals[MAX_TERMINALS];
+int num_nonterminals = 0, num_terminals = 0;
+char first_set[MAX_NONTERMINALS][MAX_TERMINALS];
+
+void add_nonterminal(char nt) {
+    if (strchr(nonterminals, nt) == NULL) {
+        nonterminals[num_nonterminals++] = nt;
+    }
+}
+
+void add_terminal(char t) {
+    if (strchr(terminals, t) == NULL) {
+        terminals[num_terminals++] = t;
+    }
+}
+
+void add_to_first_set(char nt, char t) {
+    int i, j;
+    for (i = 0; i < num_nonterminals; i++) {
+        if (nonterminals[i] == nt) {
+            for (j = 0; j < num_terminals; j++) {
+                if (terminals[j] == t) {
+                    first_set[i][j] = 1;
+                }
+            }
+        }
+    }
+}
+
+void find_first_set(char nt) {
+    int i, j;
+    for (i = 0; i < num_nonterminals; i++) {
+        if (nonterminals[i] == nt) {
+            if (nt == 'A' || nt == 'B') {
+                add_to_first_set(nt, 'e');
+            } else if (nt == 'S') {
+                find_first_set('A');
+                find_first_set('B');
+                for (j = 0; j < num_terminals; j++) {
+                    if (first_set[i][j] == 0 && 
+                        (first_set[i+1][j] == 1 || first_set[i+2][j] == 1)) {
+                        first_set[i][j] = 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    int i, j;
+    char input[20];
+
+    add_nonterminal('S');
+    add_nonterminal('A');
+    add_nonterminal('B');
+    add_terminal('a');
+    add_terminal('b');
+
+   
+    find_first_set('S');
+    find_first_set('A');
+    find_first_set('B');
+
+   
+    for (i = 0; i < num_nonterminals; i++) {
+        printf("FIRST(%c) = { ", nonterminals[i]);
+        for (j = 0; j < num_terminals; j++) {
+            if (first_set[i][j] == 1) {
+                printf("%c, ", terminals[j]);
+            }
+        }
+        printf("}\n");
+    }
+
+    return 0;
+}
