@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+int main()
+ {
+    char input[1000];
+    int whitespace_count = 0;
+    int newline_count = 0;
+    int i = 0;
+
+    printf("Enter input: ");
+    fgets(input, sizeof(input), stdin);
+
+    while (input[i] != '\0') {
+        if (input[i] == ' ') {
+            whitespace_count++;
+        } else if (input[i] == '\n') {
+            newline_count++;
+        }
+        i++;
+    }
+
+    printf("Number of whitespace characters: %d\n", whitespace_count);
+    printf("Number of newline characters: %d\n", newline_count);
+
+    return 0;
+}
