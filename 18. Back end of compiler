@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void emit(char *opcode, char *operand1, char *operand2, char *operand3) {
+    printf("%s %s, %s, %s\n", opcode, operand1, operand2, operand3);
+}
+
+int main() {
+    char input[1000];   
+    char output[1000];  
+    char *tokens[100];
+    int num_tokens = 0; 
+
+    printf("Enter the program to compile:\n");
+    fgets(input, sizeof(input), stdin);
+
+    char *token = strtok(input, " \n");
+    while (token != NULL) {
+        tokens[num_tokens++] = token;
+        token = strtok(NULL, " \n");
+    }
+
+    emit(".data", "", "", "");
+    emit("result:", ".zero", "4", "");
+    emit(".text", "", "", "");
+    emit(".globl main", "", "", "");
+    emit("main:", "", "", "");
+
+    int i = 0;
+    while (i < num_tokens) {
+        if (strcmp(tokens[i+1], "=") == 0) {
+            emit("movl", tokens[i+2], "%eax", "");
+            emit("movl", "%eax", "result", "");
+            i += 3;
+        }
+        else {
+            char *op1 = tokens[i];
+            char *op = tokens[i+1];
+            char *op2 = tokens[i+2];
+            emit("movl", op1, "%eax", "");
+            if (strcmp(op, "+") == 0) {
+                emit("addl", op2, "%eax", "");
+            } else if (strcmp(op, "-") == 0) {
+                emit("subl", op2, "%eax", "");
+            } else if (strcmp(op, "*") == 0) {
+                emit("imull", op2, "%eax", "");
+            } else if (strcmp(op, "/") == 0) {
+                emit("movl", "$0", "%edx", "");
+                emit("idivl", op2, "", "");
+            }
+            emit("movl", "%eax", "result", "");
+            i += 3;
+        }
+    }
+
+    emit("movl", "result", "%eax", "");
+    emit("ret", "", "", "");
+
+    printf("Generated assembly code:\n");
+    printf("========================\n");
+    printf(".data\n");
+    printf("result: .zero 4\n");
+    printf(".text\n");
+    printf(".globl main\n");
+    printf("main:\n");
+    printf("%s", output);
+
+    return 0;
+}
