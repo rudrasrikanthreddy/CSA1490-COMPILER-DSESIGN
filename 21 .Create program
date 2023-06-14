@@ -1,0 +1,45 @@
+c program input file
+ #include <stdio.h>
+ int main() 
+ {    
+      int number1, number2, sum;
+ printf("Enter two integers: ");
+ scanf("%d %d", &number1, &number2);
+ sum = number1 + number2;      
+      printf("%d + %d = %d", number1, number2, sum);
+  return 0;
+ }
+lex code
+%{
+int nchar, nword, nline;
+%}
+%%
+\n { nline++; nchar++; }
+[^ \t\n]+ { nword++, nchar += yyleng; }
+. { nchar++; }
+%%
+int yywrap(void) {
+return 1;
+}
+int main(int argc, char *argv[]) {
+yyin = fopen(argv[1], "r");
+yylex();
+printf("Number of characters = %d\n", nchar);
+printf("Number of words = %d\n", nword);
+printf("Number of lines = %d\n", nline);
+fclose(yyin);
+}
+output:
+Microsoft Windows [Version 10.0.18362.239]
+(c) 2019 Microsoft Corporation. All rights reserved.
+
+C:\Users\PADMASRI>cd Documents
+
+C:\Users\PADMASRI\Documents>lex 21.l
+
+C:\Users\PADMASRI\Documents>gcc -o 21 lex.yy.c
+
+C:\Users\PADMASRI\Documents>21.exe 21.c
+Number of characters = 242
+Number of words = 33
+Number of lines = 10
